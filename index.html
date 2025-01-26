@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>List of 75 Items</title>
+</head>
+<body>
+    <ul id="item-list">
+        <!-- List items will be dynamically generated -->
+    </ul>
+    <script>
+        async function loadCSVAndGenerateList() {
+            try {
+                // Fetch the CSV file
+                const response = await fetch('data.csv');
+                const csvText = await response.text();
+
+                // Parse the CSV text
+                const rows = csvText.trim().split('\n').slice(1); // Skip header row
+                const itemList = document.getElementById('item-list');
+
+                rows.forEach(row => {
+                    const [number, url] = row.split(',');
+
+                    const li = document.createElement('li');
+                    if (url) {
+                        const link = document.createElement('a');
+                        link.href = url.trim();
+                        link.textContent = `Item ${number}`;
+                        link.target = '_blank'; // Open links in a new tab
+                        li.appendChild(link);
+                    } else {
+                        li.textContent = `Item ${number}`;
+                    }
+                    itemList.appendChild(li);
+                });
+            } catch (error) {
+                console.error('Error loading or parsing CSV:', error);
+            }
+        }
+
+        // Load the CSV and generate the list on page load
+        loadCSVAndGenerateList();
+    </script>
+</body>
+</html>
