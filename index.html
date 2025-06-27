@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>An Abandoned Zoo in LA</title>
 
-  <!-- Milligram CSS Framework -->
+  <!-- Milligram CSS -->
   <link
     rel="stylesheet"
     href="https://cdnjs.cloudflare.com/ajax/libs/milligram/1.4.1/milligram.min.css"
@@ -35,22 +35,37 @@
       color: #666;
     }
 
-    ul#item-list {
+    details {
+      margin-bottom: 1rem;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      padding: 0.5rem 1rem;
+      background: #f9f9f9;
+    }
+
+    summary {
+      font-weight: bold;
+      font-size: 1.2rem;
+      cursor: pointer;
+    }
+
+    ul.group-list {
       list-style-type: none;
-      padding-left: 0;
+      padding-left: 1rem;
+      margin-top: 0.5rem;
     }
 
-    ul#item-list li {
-      margin-bottom: 0.75rem;
-      font-size: 1.1rem;
+    ul.group-list li {
+      margin-bottom: 0.5rem;
+      font-size: 1.05rem;
     }
 
-    ul#item-list li a {
+    ul.group-list li a {
       text-decoration: none;
       color: #1e88e5;
     }
 
-    ul#item-list li a:hover {
+    ul.group-list li a:hover {
       text-decoration: underline;
     }
   </style>
@@ -66,40 +81,79 @@
     </p>
   </header>
 
-  <ul id="item-list">
-    <!-- List items will be dynamically generated -->
-  </ul>
+  <div id="accordion-container">
+    <!-- Groups will be inserted here -->
+  </div>
 
   <script>
-    async function loadCSVAndGenerateList() {
+    async function loadCSVAndGenerateAccordion() {
       try {
         const response = await fetch('data.csv');
         const csvText = await response.text();
-        const rows = csvText.trim().split('\n').slice(1); // Skip header
-        const itemList = document.getElementById('item-list');
+        const rows = csvText.trim().split('\n');
+        const headers = rows[0].split(',');
+        const dataRows = rows.slice(1);
 
-        rows.forEach(row => {
-          const [number, url] = row.split(',');
-          const li = document.createElement('li');
+        const areaIndex = headers.indexOf('area');
+        const numberIndex = headers.indexOf('number');
+        const urlIndex = headers.indexOf('url');
 
-          if (url && url.trim()) {
-            const link = document.createElement('a');
-            link.href = url.trim();
-            link.textContent = number;
-            link.target = '_blank';
-            li.appendChild(link);
-          } else {
-            li.textContent = number;
-          }
+        const grouped = {};
+        dataRows.forEach(row => {
+          const cols = row.split(',');
+          const area = cols[areaIndex].trim();
+          const number = cols[numberIndex].trim();
+          const url = cols[urlIndex]?.trim();
 
-          itemList.appendChild(li);
+          if (!grouped[area]) grouped[area] = [];
+          grouped[area].push({ number, url });
         });
+
+        const container = document.getElementById('accordion-container');
+
+        Object.entries(grouped).forEach(([area, items], groupIndex) => {
+          const details = document.createElement('details');
+          details.classList.add('area-group');
+          const summary = document.createElement('summary');
+          summary.textContent = area;
+          details.appendChild(summary);
+
+          const ul = document.createElement('ul');
+          ul.className = 'group-list';
+
+          items.forEach(({ number, url }) => {
+            const li = document.createElement('li');
+            if (url) {
+              const link = document.createElement('a');
+              link.href = url;
+              link.textContent = number;
+              link.target = '_blank';
+              li.appendChild(link);
+            } else {
+              li.textContent = number;
+            }
+            ul.appendChild(li);
+          });
+
+          details.appendChild(ul);
+          container.appendChild(details);
+        });
+
+        // Accordion behavior: only one <details> open at a time
+        container.addEventListener('toggle', e => {
+          if (e.target.tagName === 'DETAILS' && e.target.open) {
+            document.querySelectorAll('#accordion-container details').forEach(d => {
+              if (d !== e.target) d.removeAttribute('open');
+            });
+          }
+        });
+
       } catch (error) {
         console.error('Error loading or parsing CSV:', error);
       }
     }
 
-    loadCSVAndGenerateList();
+    loadCSVAndGenerateAccordion();
   </script>
 </body>
 </html>
