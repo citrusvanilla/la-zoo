@@ -1,47 +1,100 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>List of 75 Items</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>An Abandoned Zoo in LA</title>
+
+  <!-- Milligram CSS Framework -->
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/milligram/1.4.1/milligram.min.css"
+    integrity="sha512-HOZji5fHKQPBxlEnbdCkxq5TKd04/hwIu7fALAfXz/Yq1wD4zUBf1I+WdkhNHfghoCvMiL1kOxED5/qh5nDRhg=="
+    crossorigin="anonymous"
+    referrerpolicy="no-referrer"
+  />
+
+  <style>
+    body {
+      padding: 2rem;
+      font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      margin-bottom: 0.5rem;
+    }
+
+    p.subtitle {
+      font-size: 1.1rem;
+      color: #666;
+    }
+
+    ul#item-list {
+      list-style-type: none;
+      padding-left: 0;
+    }
+
+    ul#item-list li {
+      margin-bottom: 0.75rem;
+      font-size: 1.1rem;
+    }
+
+    ul#item-list li a {
+      text-decoration: none;
+      color: #1e88e5;
+    }
+
+    ul#item-list li a:hover {
+      text-decoration: underline;
+    }
+  </style>
 </head>
 <body>
-    <ul id="item-list">
-        <!-- List items will be dynamically generated -->
-    </ul>
-    <script>
-        async function loadCSVAndGenerateList() {
-            try {
-                // Fetch the CSV file
-                const response = await fetch('data.csv');
-                const csvText = await response.text();
+  <header>
+    <h1>An Abandoned Zoo in LA</h1>
+    <p class="subtitle">Got Beta? Email us a link to <strong>oasesjournal@gmail.com</strong></p>
+  </header>
 
-                // Parse the CSV text
-                const rows = csvText.trim().split('\n').slice(1); // Skip header row
-                const itemList = document.getElementById('item-list');
+  <ul id="item-list">
+    <!-- List items will be dynamically generated -->
+  </ul>
 
-                rows.forEach(row => {
-                    const [number, url] = row.split(',');
+  <script>
+    async function loadCSVAndGenerateList() {
+      try {
+        const response = await fetch('data.csv');
+        const csvText = await response.text();
+        const rows = csvText.trim().split('\n').slice(1); // Skip header
+        const itemList = document.getElementById('item-list');
 
-                    const li = document.createElement('li');
-                    if (url) {
-                        const link = document.createElement('a');
-                        link.href = url.trim();
-                        link.textContent = `${number}`;
-                        link.target = '_blank'; // Open links in a new tab
-                        li.appendChild(link);
-                    } else {
-                        li.textContent = `Item ${number}`;
-                    }
-                    itemList.appendChild(li);
-                });
-            } catch (error) {
-                console.error('Error loading or parsing CSV:', error);
-            }
-        }
+        rows.forEach(row => {
+          const [number, url] = row.split(',');
+          const li = document.createElement('li');
 
-        // Load the CSV and generate the list on page load
-        loadCSVAndGenerateList();
-    </script>
+          if (url && url.trim()) {
+            const link = document.createElement('a');
+            link.href = url.trim();
+            link.textContent = `${number}`;
+            link.target = '_blank';
+            li.appendChild(link);
+          } else {
+            li.textContent = `Item ${number}`;
+          }
+
+          itemList.appendChild(li);
+        });
+      } catch (error) {
+        console.error('Error loading or parsing CSV:', error);
+      }
+    }
+
+    loadCSVAndGenerateList();
+  </script>
 </body>
 </html>
