@@ -58,7 +58,12 @@
 <body>
   <header>
     <h1>An Abandoned Zoo in LA</h1>
-    <p class="subtitle">Got Beta? Email us a link to <strong>oasesjournal@gmail.com</strong></p>
+    <p class="subtitle">
+      Got beta? Send us a link to
+      <a href="https://www.instagram.com/oasesjournal" target="_blank">@oasesjournal</a>
+      or
+      <a href="mailto:oasesjournal@gmail.com">oasesjournal@gmail.com</a>
+    </p>
   </header>
 
   <ul id="item-list">
@@ -80,11 +85,11 @@
           if (url && url.trim()) {
             const link = document.createElement('a');
             link.href = url.trim();
-            link.textContent = `${number}`;
+            link.textContent = number;
             link.target = '_blank';
             li.appendChild(link);
           } else {
-            li.textContent = `Item ${number}`;
+            li.textContent = number;
           }
 
           itemList.appendChild(li);
